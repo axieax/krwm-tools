@@ -1,0 +1,3 @@
+# Chrome Credential Stealer
+
+white 🧢
