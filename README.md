@@ -1,5 +1,6 @@
-# Chrome Credential Stealer
+# Krwm Tools
 
+Chrome Credential Stealer
 white 🧢
 
 ## Setup
