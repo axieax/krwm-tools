@@ -14,9 +14,12 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 
 
 ## Setup
-Install dependencies with `pip install -r requirements.txt` or `pip3 install -r requirements.txt`.
+**Option 1**: Run the exe file
 
-Start the program with `python main.py` or `python3 main.py`.
+**Option 2**: Directly with python
+1. Make sure you are in the root directory of the repo.
+1. Install dependencies with `pip install -r .\src\requirements.txt`.
+1. Start the program with `python .\src\main.py`.
 
 Extracted data will be placed in the `logs` directory.
 
