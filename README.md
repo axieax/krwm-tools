@@ -1,6 +1,6 @@
 # Krwm Tools
 
-Chrome Credential Stealer
+Chromium Credential Stealer
 
 white 🧢
 
