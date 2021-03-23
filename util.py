@@ -67,20 +67,20 @@ def get_encryption_key(browser_path: str) -> str:
     return win_decrypt(encryption_key)
 
 
-def try_decrypt(input_string, encryption_key: str) -> str:
+def try_decrypt(foo, encryption_key: str):
     """
-    Decrypts an input string if it is a byte-string.
+    Decrypts an input foo if it is a byte-string.
     Some Chromium browsers encrypt different types of data.
     """
-    if isinstance(input_string, bytes):
+    if isinstance(foo, bytes):
         try:
             # decrypts with Window's DPAPI
-            return win_decrypt(input_string)
+            return win_decrypt(foo)
         except pywintypes.error:
             # decrypts with Chromium's new standard
-            return chromium_decrypt(input_string, encryption_key)
+            return chromium_decrypt(foo, encryption_key)
     else:
-        return input_string
+        return foo
 
 
 def chromium_decrypt(encrypted_str: bytes, encryption_key: str) -> str:

