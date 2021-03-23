@@ -6,20 +6,20 @@ from util import get_profiles, create_temp_file, create_log_file, try_decrypt
 
 """
 Tables of interest from SQLi Recon:
-- autofill: all the fields and values
-    - name, value
-- autofill_profiles
-    - company_name, street_address, city, state, zipcode, country_code
-- autofill_profile_addresses
-    - street_address, city, state, zip_code, country_code
-- autofill_profile_names
-    - honorific_prefix, full_name
-- autofill_profile_emails
-    - email
-- autofill_profile_phones
-    - number
-- credit_cards
-    - card_number_encrypted, name_on_card, expiration_month, expiration_year
+- autofill: contains all the fields and corresponding values
+    - Columns of interest: name, value
+- autofill_profiles: contains profiles of addresses
+    - Columns of interest: company_name, street_address, city, state, zipcode, country_code
+- autofill_profile_addresses: same as above, although probably unused
+    - Columns of interest: street_address, city, state, zip_code, country_code
+- autofill_profile_names: contains titles and names
+    - Columns of interest: honorific_prefix, full_name
+- autofill_profile_emails: contains email addresses
+    - Columns of interest: email
+- autofill_profile_phones: contains phone numbers
+    - Columns of interest: number
+- credit_cards: contains encrypted credit card info
+    - Columns of interest: card_number_encrypted, name_on_card, expiration_month, expiration_year
 """
 
 

