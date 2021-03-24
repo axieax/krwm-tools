@@ -14,7 +14,7 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 
 
 ## Setup
-**Option 1**: Download krwmtools-win from Releases (on the right) and run the containing krwmtools.exe file.
+**Option 1**: Download krwmtools-win from Releases (on the right). Extract and run the containing krwmtools.exe file.
 
 **Option 2**: Directly with python
 1. Make sure you are in the root directory of the repo.
