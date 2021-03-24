@@ -4,8 +4,8 @@ on: [push, pull_request]
 
 jobs:
 
-  build-windows:
-
+  build:
+    
     runs-on: windows-latest
 
     steps:
@@ -26,10 +26,10 @@ jobs:
       run: pip install pyinstaller
 
     - name: Run PyInstaller
-      run: pyinstaller --onefile -w .\src\main.py
+      run: pyinstaller --onefile -w .\src\main.py -n krwmtools
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: Krwm Tools
-        path: dist\main.exe
+        name: krwmtools-win
+        path: dist\krwmtools.exe
