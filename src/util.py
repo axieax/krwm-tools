@@ -13,8 +13,9 @@ from Crypto.Cipher import AES
 
 """ CONSTANTS """
 # Directory paths
-TEMP_PATH = 'temp'
-LOGS_PATH = 'logs'
+KRWM_DIR = os.path.expanduser(r'~\Documents\Krwm Tools')
+TEMP_PATH = KRWM_DIR + r'\temp'
+LOGS_PATH = KRWM_DIR + r'\logs'
 
 # Encryption key prefix
 ENC_KEY_PREFIX = len('DPAPI')
