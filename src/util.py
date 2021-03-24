@@ -13,8 +13,8 @@ from Crypto.Cipher import AES
 
 """ CONSTANTS """
 # Directory paths
-TEMP_PATH = r'.\temp'
-LOGS_PATH = r'.\logs'
+TEMP_PATH = 'temp'
+LOGS_PATH = 'logs'
 
 # Encryption key prefix
 ENC_KEY_PREFIX = len('DPAPI')
