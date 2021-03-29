@@ -21,7 +21,7 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 1. Install dependencies with `pip install -r .\src\requirements.txt`.
 1. Start the program with `python .\src\main.py`.
 
-Extracted data will be placed in your `Documents\Krwm Tools\logs` directory.
+Extracted data will be placed in your `Documents\Krwm Tools\Logs` directory.
 
 
 ## Disclaimer

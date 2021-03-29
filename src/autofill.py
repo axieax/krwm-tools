@@ -224,7 +224,7 @@ def sqli_recon(db_cursor) -> None:
         'autofill_profile_names',
         'autofill_profile_emails',
         'autofill_profile_phones',
-        'credit_cards'
+        'credit_cards',
     ]
 
     # To find columns for tables of interest
