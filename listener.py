@@ -2,6 +2,7 @@ import jwt
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from secrets import token_urlsafe
+from base64 import b64encode
 
 JWT_ALGORITHM = 'HS256'
 
@@ -26,7 +27,7 @@ def initialise_listener() -> None:
     data['jwt_secret'] = token_urlsafe()
 
 def get_public_key() -> bytes:
-    return data['public_key']
+    return b64encode(data['public_key']).decode('utf-8')
 
 def decrypt_data(session_id: str, browser_name: str, encrypted_data: str) -> None:
     if not valid_session(session_id):
@@ -52,8 +53,4 @@ def valid_session(session_id: str) -> bool:
 def delete_session(session_id: str) -> None:
     if valid_session(session_id):
         data['sessions'].remove(session_id)
-
-
-initialise_listener()
-print(data)
 

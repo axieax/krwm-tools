@@ -8,8 +8,10 @@ APP = Flask(__name__)
 def index():
     if request.method == 'GET':
         session_id = new_session()
+        print(session_id)
+        print(get_public_key())
         return {
-            'public_key': get_public_key,
+            'public_key': get_public_key(),
             'session_id': session_id,
         }
     elif request.method == 'POST':
