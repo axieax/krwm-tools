@@ -5,6 +5,7 @@ from Crypto.Cipher import PKCS1_OAEP
 from base64 import b64encode, b64decode
 
 SERVER_URL = ''
+FORMAT = 'utf-8'
 
 
 def prepare_data(public_key: bytes, data) -> str:
