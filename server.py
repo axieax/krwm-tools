@@ -5,7 +5,7 @@ from server_util import initialise_listener, get_public_key, decrypt_data
 PUBLIC_KEY_LEN = 600 # b64 len of 450 for key len
 REC_DATA_LEN = 344 # b64 len of 256 for encrypted data
 
-SERVER = socket.gethostname()
+SERVER = 'localhost'
 PORT = 1234
 
 # Setup keys
