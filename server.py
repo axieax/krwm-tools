@@ -8,18 +8,16 @@ APP = Flask(__name__)
 def index():
     if request.method == 'GET':
         session_id = new_session()
-        print(session_id)
-        print(get_public_key())
         return {
             'public_key': get_public_key(),
             'session_id': session_id,
         }
     elif request.method == 'POST':
-        payload = request.json()
+        payload = request.json
         decrypt_data(payload['session_id'], payload['browser_name'], payload['data'])
         return {}
     else:
-        session_id = request.args.get('session_id')
+        session_id = request.json['session_id']
         delete_session(session_id)
         return {}
 

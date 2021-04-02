@@ -1,16 +1,13 @@
-import jwt
+import json
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from secrets import token_urlsafe
-from base64 import b64encode
-
-JWT_ALGORITHM = 'HS256'
+from base64 import b64encode, b64decode
 
 data = {
     'sessions': [],
     'private_key': b'',
     'public_key': b'',
-    'jwt_secret': b'',
 }
 
 
@@ -23,26 +20,27 @@ def initialise_listener() -> None:
     # generate public key
     public_key = key.publickey().export_key()
     data['public_key'] = public_key
-    # generate jwt secret token
-    data['jwt_secret'] = token_urlsafe()
 
 def get_public_key() -> bytes:
     return b64encode(data['public_key']).decode('utf-8')
 
 def decrypt_data(session_id: str, browser_name: str, encrypted_data: str) -> None:
+    # check for valid session
     if not valid_session(session_id):
         return
-
+    # decode encrypted data
+    encrypted_data = b64decode(encrypted_data)
     # decrypt data
-    private_key = data['private_key']
+    private_key = RSA.import_key(data['private_key'])
     cipher = PKCS1_OAEP.new(private_key)
     decrypted_data = cipher.decrypt(encrypted_data)
-    # decide data
-    decoded = jwt.decode(decrypted_data, data['secret_key'], algorithms=[JWT_ALGORITHM])
+    # decode data
+    decoded = json.loads(decrypted_data)
     print(browser_name)
     print(decoded)
 
 def new_session() -> str:
+    # generate new session id
     session_id = token_urlsafe()
     data['sessions'].append(session_id)
     return session_id
@@ -53,4 +51,3 @@ def valid_session(session_id: str) -> bool:
 def delete_session(session_id: str) -> None:
     if valid_session(session_id):
         data['sessions'].remove(session_id)
-
