@@ -1,69 +1,60 @@
 """ IMPORTS """
 import socket
-from server_util import FORMAT, initialise_cipher, get_public_key, decrypt_data
+from server_util import (
+    initialise_RSA_cipher, get_public_key, extract_aes_cipher,
+    extract_message, decrypt_message, receive_message,
+    log_setup, log_message,
+)
+
 
 """ CONSTANTS """
 SERVER = 'localhost'
 PORT = 4813
-MAX_CONNECTIONS = 5
-
-PUBLIC_KEY_LEN = 600 # b64 len of 450 for key len
-CLIENT_DATA_LEN = 256
-
-
-def receive_message(client_socket) -> str:
-    """ Receives a message from a client socket """
-    # receive number of blocks
-    num_blocks = client_socket.recv(CLIENT_DATA_LEN).decode(FORMAT)
-    if not num_blocks:
-        return ''
-
-    num_blocks = int(num_blocks)
-    print(f'Receiving {num_blocks} blocks')
-
-    # receive rest of message in blocks
-    message = ''
-    for _ in range(num_blocks):
-        # receive and decrypt each block
-        encrypted_block = client_socket.recv(CLIENT_DATA_LEN)
-        decrypted_block = decrypt_data(encrypted_block)
-        message += decrypted_block
-
-    return message
 
 
 def handle_client() -> None:
     """ Handles a socket client """
-    # connect client
+    # Connect client
     client_socket, client_address = server.accept()
     print(f'[NEW CONNECTION]: {client_address}')
 
-    # send public key
+    # Send public key
+    public_key = get_public_key()
     client_socket.send(public_key)
 
-    # listen for incoming data
-    while True:
-        message = receive_message(client_socket)
-        if not message:
-            break
-        print(message)
+    # Generate AES cipher with same settings as client
+    aes_cipher = extract_aes_cipher(client_socket)
 
-    # disconnect client
+    # Setup client logs
+    logs_dir = log_setup(client_socket, aes_cipher)
+
+    # Listen for incoming data
+    while True:
+        encrypted_message = receive_message(client_socket)
+        if not encrypted_message:
+            # End of stream
+            break
+        encoded_message = decrypt_message(encrypted_message, aes_cipher)
+        message = extract_message(encoded_message)
+        # print(message)
+        log_message(message, logs_dir)
+
+    # Disconnect client
     print(f'[DISCONNECTED]: {client_address}')
     client_socket.close()
 
 
 
 if __name__ == '__main__':
-    # set up RSA keys and cipher
-    initialise_cipher()
-    public_key = get_public_key()
+    # Set up RSA cipher
+    initialise_RSA_cipher()
 
-    # start server
+    # Start socket server
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((SERVER, PORT))
-    server.listen(MAX_CONNECTIONS)
+    server.listen()
     print('🔈 Listening...')
 
+    # Handle socket clients
     while True:
         handle_client()

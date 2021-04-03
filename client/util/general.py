@@ -6,8 +6,8 @@ from shutil import copyfile
 """ CONSTANTS """
 # Directory paths
 KRWM_DIR = os.path.expanduser('~/Documents/Krwm Tools')
-TEMP_PATH = KRWM_DIR + '/Temp'
-LOGS_PATH = KRWM_DIR + '/Logs'
+TEMP_PATH = KRWM_DIR + '/Client Temp'
+LOGS_PATH = KRWM_DIR + '/Client Logs'
 
 # Encode / decode format
 FORMAT = 'utf-8'
