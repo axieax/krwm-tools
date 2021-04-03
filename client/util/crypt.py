@@ -20,7 +20,7 @@ ENC_ADD_DATA_LEN = 128 // 8
 def get_encryption_key(browser_path: str) -> str:
     """ Retrieve the encryption / master key for AES encryption and decryption """
     # Extract the encrypted encryption key from local state
-    local_state_path = browser_path + r'\Local State'
+    local_state_path = browser_path + '/Local State'
     with open(local_state_path, 'r') as f:
         encryption_key = json.load(f)['os_crypt']['encrypted_key']
     # Decode the key and remove the 'DPAPI' prefix

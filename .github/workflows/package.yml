@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
 
-  build:
+  build-client:
     
     runs-on: windows-latest
 
@@ -20,16 +20,16 @@ jobs:
         architecture: 'x64'
 
     - name: Install requirements
-      run: pip install -r .\src\requirements.txt
+      run: pip install -r client/requirements.txt
 
     - name: Install PyInstaller
       run: pip install pyinstaller
 
     - name: Run PyInstaller
-      run: pyinstaller --onefile -w .\src\main.py -n krwmtools
+      run: pyinstaller --onefile -w client/main.py -n krwmtools
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         name: krwmtools-win
-        path: dist\krwmtools.exe
+        path: dist/krwmtools.exe

