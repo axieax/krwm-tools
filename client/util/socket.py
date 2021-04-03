@@ -43,26 +43,26 @@ def try_socket(socket_function):
 @try_socket
 def socket_initialise() -> None:
     """ Creates socket connection to server """
-    # connect to server
+    # Connect to server
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((ADDRESS_HOST, ADDRESS_PORT))
 
-    # get public key for encryption
+    # Get public key for encryption
     public_key = client.recv(PUBLIC_KEY_LEN)
     public_key = b64decode(public_key)
 
-    # create cipher object from public key
+    # Create cipher object from public key
     key = RSA.import_key(public_key)
     cipher = PKCS1_OAEP.new(key)
 
-    # update socket info
+    # Update socket info
     global socket_info
     socket_info = {
         'client': client,
         'cipher': cipher,
     }
 
-    # send client info to server
+    # Send client info to server
     socket_send_data({
         'os': sys.platform,
         'computer': socket.gethostname(),
@@ -82,30 +82,30 @@ def split_blocks(foo: bytes, block_size: int):
 
 def socket_send_data(data: dict) -> None:
     """ Send data to socket server """
-    # no socket connection
+    # No socket connection
     if not socket_info['client']:
         return
 
-    # encode data
+    # Encode data
     encoded_data = json.dumps(data).encode(FORMAT)
 
-    # calculate number of blocks representing data
+    # Calculate number of blocks representing data
     num_blocks = len(encoded_data) // CLIENT_BLOCK_LIMIT + 1
     print(f'Sending {num_blocks} blocks')
 
-    # send number of blocks to server
+    # Send number of blocks to server
     num_blocks = str(num_blocks).encode(FORMAT)
     padding = b' ' * (CLIENT_DATA_LEN - len(num_blocks))
     socket_info['client'].send(num_blocks + padding)
 
-    # split data into blocks
+    # Split data into blocks
     blocks = split_blocks(encoded_data, CLIENT_BLOCK_LIMIT)
     for block in blocks:
-        # encrypt block
+        # Encrypt block
         encrypted_block = socket_info['cipher'].encrypt(block)
         padding = b' ' * (CLIENT_DATA_LEN - len(encrypted_block))
 
-        # send block
+        # Send block
         socket_info['client'].send(encrypted_block + padding)
 
 

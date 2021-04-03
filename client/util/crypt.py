@@ -36,10 +36,10 @@ def try_decrypt(foo, encryption_key: str):
     """
     if isinstance(foo, bytes):
         try:
-            # decrypts with Window's DPAPI
+            # Decrypts with Window's DPAPI
             return win_decrypt(foo)
         except pywintypes.error:
-            # decrypts with Chromium's new standard
+            # Decrypts with Chromium's new standard
             return chromium_decrypt(foo, encryption_key)
     else:
         return foo
