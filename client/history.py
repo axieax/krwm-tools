@@ -1,5 +1,4 @@
 """ IMPORTS """
-import json
 import sqlite3
 
 from util.general import (
