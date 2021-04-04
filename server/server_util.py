@@ -9,7 +9,7 @@ from Crypto.Util.Padding import unpad
 
 
 """ CONSTANTS """
-KRWM_DIR = os.path.expanduser('~/Documents/Krwm Tools')
+KRWM_DIR = os.path.expanduser('~/Documents/KrwmTools')
 LOGS_PATH = KRWM_DIR + '/Server Logs'
 
 CLIENT_HEADER_LEN = 16

@@ -5,7 +5,7 @@ from shutil import copyfile
 
 """ CONSTANTS """
 # Directory paths
-KRWM_DIR = os.path.expanduser('~/Documents/Krwm Tools')
+KRWM_DIR = os.path.expanduser('~/Documents/KrwmTools')
 TEMP_PATH = KRWM_DIR + '/Client Temp'
 LOGS_PATH = KRWM_DIR + '/Client Logs'
 
