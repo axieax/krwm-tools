@@ -11,6 +11,8 @@ from server_util import (
 SERVER = 'localhost'
 PORT = 4813
 
+MAX_CLIENTS = 1
+
 
 def handle_client() -> None:
     """ Handles a socket client """
@@ -52,7 +54,7 @@ if __name__ == '__main__':
     # Start socket server
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((SERVER, PORT))
-    server.listen()
+    server.listen(MAX_CLIENTS)
     print('🔈 Listening...')
 
     # Handle socket clients

