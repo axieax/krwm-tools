@@ -14,8 +14,7 @@ LOGS_PATH = KRWM_DIR + '/Server Logs'
 
 BITS_IN_BYTE = 8
 RSA_MOD_LEN = 256
-RSA_KEY_LEN = 450
-RSA_KEY_LEN_B64 = 600 # ciphertext same length as key
+RSA_MOD_LEN_B64 = 344
 
 FORMAT = 'utf-8'
 
@@ -73,7 +72,7 @@ AES Utilities
 """
 def extract_aes_key(client_socket) -> bytes:
     """ Receives and decrypts the AES key from a client socket """
-    aes_key = socket_recvall(client_socket, RSA_KEY_LEN_B64)
+    aes_key = socket_recvall(client_socket, RSA_MOD_LEN_B64)
     aes_key = b64decode(aes_key)
     aes_key = rsa_decrypt(aes_key)
     return aes_key
