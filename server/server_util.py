@@ -25,6 +25,18 @@ rsa_info = {
 }
 
 
+"""
+Communication Utilities
+"""
+def socket_recvall(client_socket, num_bytes: int):
+    """ Wrapper function for socket recv method to receive the full num_bytes """
+    received = b''
+    while len(received) != num_bytes:
+        missing = num_bytes - len(received)
+        received += client_socket.recv(missing)
+    return received
+
+
 
 """
 RSA Utilities
@@ -44,6 +56,7 @@ def initialise_rsa_cipher() -> None:
 
 
 def rsa_decrypt(ciphertext: bytes) -> dict:
+    """ Decrypts ciphertext using the RSA cipher """
     rsa_cipher = rsa_info['cipher']
     plaintext = rsa_cipher.decrypt(ciphertext)
     return plaintext
@@ -60,7 +73,7 @@ AES Utilities
 """
 def extract_aes_key(client_socket) -> bytes:
     """ Receives and decrypts the AES key from a client socket """
-    aes_key = client_socket.recv(RSA_KEY_LEN_B64)
+    aes_key = socket_recvall(client_socket, RSA_KEY_LEN_B64)
     aes_key = b64decode(aes_key)
     aes_key = rsa_decrypt(aes_key)
     return aes_key
@@ -69,7 +82,7 @@ def extract_aes_key(client_socket) -> bytes:
 def extract_message(client_socket, aes_key: bytes) -> dict:
     """ Extracts a message from a client socket """
     # Extract and decrypt RSA-encrypted header
-    header = client_socket.recv(RSA_MOD_LEN)
+    header = socket_recvall(client_socket, RSA_MOD_LEN)
     if not header:
         return {}
     header = rsa_decrypt(header)
@@ -77,8 +90,8 @@ def extract_message(client_socket, aes_key: bytes) -> dict:
 
     # Receive ciphertext
     ciphertext_length = header['ciphertext_length']
-    ciphertext = client_socket.recv(ciphertext_length)
-    print(f'Received {ciphertext_length} bytes')
+    ciphertext = socket_recvall(client_socket, ciphertext_length)
+    print(f'Received {len(ciphertext)} bytes')
 
     # Decrypt ciphertext
     nonce = b64decode(header['nonce'].encode(FORMAT))

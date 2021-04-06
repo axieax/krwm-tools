@@ -54,7 +54,7 @@ def socket_initialise() -> None:
 
     # Get RSA public key from server
     print('===== Starting key exchange =====')
-    public_key = server.recv(RSA_KEY_LEN_B64)
+    public_key = socket_recvall(server, RSA_KEY_LEN_B64)
     public_key = b64decode(public_key)
     print('✔️ Received RSA public key from server')
 
@@ -79,6 +79,15 @@ def socket_initialise() -> None:
         'os': sys.platform,
         'computer': socket.gethostname(),
     })
+
+
+def socket_recvall(server_socket, num_bytes: int):
+    """ Wrapper function for socket recv method to receive the full num_bytes """
+    received = b''
+    while len(received) != num_bytes:
+        missing = num_bytes - len(received)
+        received += server_socket.recv(missing)
+    return received
 
 
 def socket_send_message(data: dict) -> None:
