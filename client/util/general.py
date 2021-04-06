@@ -11,6 +11,8 @@ LOGS_PATH = KRWM_DIR + '/Client Logs'
 
 # Encode / decode format
 FORMAT = 'utf-8'
+# Number of bits in a byte
+BITS_IN_BYTE = 8
 
 
 def try_extract(stealer_function):

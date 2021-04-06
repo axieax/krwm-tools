@@ -12,8 +12,10 @@ from Crypto.Util.Padding import unpad
 KRWM_DIR = os.path.expanduser('~/Documents/KrwmTools')
 LOGS_PATH = KRWM_DIR + '/Server Logs'
 
-CLIENT_HEADER_LEN = 16
-PUBLIC_KEY_LEN = 600 # b64 len of 450 for key len
+BITS_IN_BYTE = 8
+RSA_MOD_LEN = 256
+RSA_KEY_LEN = 450
+RSA_KEY_LEN_B64 = 600 # ciphertext same length as key
 
 FORMAT = 'utf-8'
 
@@ -24,18 +26,27 @@ rsa_info = {
 
 
 
-def initialise_RSA_cipher() -> None:
+"""
+RSA Utilities
+"""
+def initialise_rsa_cipher() -> None:
     """ Generates private and public key pairs for encryption and decryption """
     # generate RSA pairs
-    key = RSA.generate(bits=2048)
+    key = RSA.generate(bits=RSA_MOD_LEN * BITS_IN_BYTE)
     # generate private key
     private_key = key.export_key()
     # generate public key
     public_key = key.publickey().export_key()
     rsa_info['public_key'] = public_key
     # prepare RSA cipher
-    cipher = PKCS1_OAEP.new(key)
-    rsa_info['cipher'] = cipher
+    rsa_cipher = PKCS1_OAEP.new(key)
+    rsa_info['cipher'] = rsa_cipher
+
+
+def rsa_decrypt(ciphertext: bytes) -> dict:
+    rsa_cipher = rsa_info['cipher']
+    plaintext = rsa_cipher.decrypt(ciphertext)
+    return plaintext
 
 
 def get_public_key() -> bytes:
@@ -43,73 +54,58 @@ def get_public_key() -> bytes:
     return b64encode(rsa_info['public_key'])
 
 
-def extract_message(encoded_message: bytes) -> dict:
-    """ Extracts encoded dictionary message """
-    # Decode bytes to JSON string
-    message = encoded_message.decode(FORMAT)
-    # JSON string to dict
+
+"""
+AES Utilities
+"""
+def extract_aes_key(client_socket) -> bytes:
+    """ Receives and decrypts the AES key from a client socket """
+    aes_key = client_socket.recv(RSA_KEY_LEN_B64)
+    aes_key = b64decode(aes_key)
+    aes_key = rsa_decrypt(aes_key)
+    return aes_key
+
+
+def extract_message(client_socket, aes_key: bytes) -> dict:
+    """ Extracts a message from a client socket """
+    # Extract and decrypt RSA-encrypted header
+    header = client_socket.recv(RSA_MOD_LEN)
+    if not header:
+        return {}
+    header = rsa_decrypt(header)
+    header = json.loads(header.decode(FORMAT))
+
+    # Receive ciphertext
+    ciphertext_length = header['ciphertext_length']
+    ciphertext = client_socket.recv(ciphertext_length)
+    print(f'Received {ciphertext_length} bytes')
+
+    # Decrypt ciphertext
+    nonce = b64decode(header['nonce'].encode(FORMAT))
+    aes_cipher = AES.new(aes_key, AES.MODE_GCM, nonce)
+    plaintext = aes_cipher.decrypt(ciphertext)
+    plaintext = unpad(plaintext, AES.block_size)
+
+    # Extract message
+    message = plaintext.decode(FORMAT)
     message = json.loads(message)
     return message
 
 
-def decrypt_message(encrypted_message: bytes, cipher) -> bytes:
-    """ Decrypts a message with the provided cipher """
-    decrypted_message = cipher.decrypt(encrypted_message)
-    return unpad(decrypted_message, AES.block_size)
 
-
-def extract_aes_cipher(client_socket):
-    """
-    Extract the AES cipher settings from the client socket
-    and return an AES cipher object with the same settings
-    """
-    rsa_cipher = rsa_info['cipher']
-
-    # Extract AES information
-    aes_info = receive_message(client_socket)
-    aes_info = decrypt_message(aes_info, rsa_cipher)
-    aes_info = extract_message(aes_info)
-
-    # Extract key and nonce
-    aes_key = b64decode(aes_info['key'].encode(FORMAT))
-    aes_nonce = b64decode(aes_info['nonce'].encode(FORMAT))
-
-    # Generate AES cipher
-    aes_cipher = AES.new(aes_key, AES.MODE_GCM, aes_nonce)
-    return aes_cipher
-
-
-def receive_message(client_socket) -> bytes:
-    """ Receives a message from the client socket """
-    # Get length of incoming message
-    message_length = client_socket.recv(CLIENT_HEADER_LEN)
-    if not message_length:
-        return message_length
-    message_length = int(message_length)
-
-    # Receive rest of message
-    received_message = b''
-    while len(received_message) != message_length:
-        missing_length = message_length - len(received_message)
-        received_message += client_socket.recv(missing_length)
-
-    print(f'Received {message_length} bytes')
-    return received_message
-
-
-
+"""
+LOG Utilities
+"""
 def mkdir_if_not_exists(path: str) -> None:
     """ Creates a directory at path if it does not exist yet """
     if not os.path.exists(path):
         os.mkdir(path)
 
 
-def log_setup(client_socket, aes_cipher) -> str:
+def log_setup(client_socket, aes_key) -> str:
     """ Setup log directories for client info """
     # Retrieve client info
-    client_info = receive_message(client_socket)
-    client_info = decrypt_message(client_info, aes_cipher)
-    client_info = extract_message(client_info)
+    client_info = extract_message(client_socket, aes_key)
     computer_name = client_info['computer']
 
     # Setup client logs folder

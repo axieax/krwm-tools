@@ -4,7 +4,7 @@ import pywintypes
 from win32crypt import CryptUnprotectData
 from base64 import b64decode
 from Crypto.Cipher import AES
-from util.general import FORMAT
+from util.general import FORMAT, BITS_IN_BYTE
 
 
 """ CONSTANTS """
@@ -13,8 +13,9 @@ ENC_KEY_PREFIX = len('DPAPI')
 
 # Encryption format: {prefix}{nonce}{ciphertext}{authentication_tag}
 ENC_PREFIX_LEN = len('v10')
-ENC_NONCE_LEN = 96 // 8
-ENC_TAG_LEN = 128 // 8
+ENC_NONCE_LEN = 96 // BITS_IN_BYTE
+ENC_CIPH_START = ENC_PREFIX_LEN + ENC_NONCE_LEN
+ENC_TAG_LEN = 128 // BITS_IN_BYTE
 
 
 def get_encryption_key(browser_path: str) -> str:
@@ -47,11 +48,10 @@ def try_decrypt(foo, encryption_key: str):
 
 def chromium_decrypt(encrypted_str: bytes, encryption_key: str) -> str:
     """ Decrypt strings encrypted on Chromium version >= 80 """
-    # Encryption format: {prefix}{nonce}{ciphertext}{authentication_tag}
-    # Extract nonce and encrypted payload
-    nonce = encrypted_str[ENC_PREFIX_LEN: ENC_PREFIX_LEN + ENC_NONCE_LEN]
-    ciphertext = encrypted_str[ENC_PREFIX_LEN + ENC_NONCE_LEN: -ENC_TAG_LEN]
-    # Decipher the AES-encrypted payload with encryption key and nonce
+    # Extract nonce and ciphertext
+    nonce = encrypted_str[ENC_PREFIX_LEN: ENC_CIPH_START]
+    ciphertext = encrypted_str[ENC_CIPH_START: -ENC_TAG_LEN]
+    # Decipher the ciphertext with encryption key and nonce
     cipher = AES.new(encryption_key, AES.MODE_GCM, nonce)
     decrypted_payload = cipher.decrypt(ciphertext).decode(FORMAT)
     return decrypted_payload
