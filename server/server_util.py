@@ -27,13 +27,17 @@ rsa_info = {
 """
 Communication Utilities
 """
-def socket_recvall(client_socket, num_bytes: int):
-    """ Wrapper function for socket recv method to receive the full num_bytes """
-    received = b''
-    while len(received) != num_bytes:
-        missing = num_bytes - len(received)
-        received += client_socket.recv(missing)
-    return received
+def socket_recvall(client_socket, num_bytes: int) -> bytes:
+    """ Wrapper for socket recv method to receive the full num_bytes """
+    
+    message = b''
+    while len(message) != num_bytes:
+        missing_bytes = num_bytes - len(message)
+        received = client_socket.recv(missing_bytes)
+        if not received:
+            return b''
+        message += received
+    return message
 
 
 

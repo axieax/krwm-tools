@@ -8,7 +8,7 @@ from server_util import (
 
 
 """ CONSTANTS """
-SERVER_HOST = 'localhost'
+SERVER_HOST = socket.gethostbyname(socket.gethostname())
 SERVER_PORT = 4813
 SERVER_ADDRESS = (SERVER_HOST, SERVER_PORT)
 MAX_CLIENTS = 1
@@ -55,9 +55,10 @@ if __name__ == '__main__':
 
     # Start socket server
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(SERVER_ADDRESS)
     server.listen(MAX_CLIENTS)
-    print('🔈 Listening...')
+    print(f'🔈 Listening on {SERVER_ADDRESS}...')
 
     # Handle socket clients
     while True:
