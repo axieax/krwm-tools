@@ -1,7 +1,7 @@
-# Krwm Tools
+# KrwmTools
 
 A tool for extracting sensitive data from Chromium browsers on Windows. Able to extract:
-- Passwords
+- Credentials
 - Autofill fields
 - Autofill profiles
 - Autofill addresses

