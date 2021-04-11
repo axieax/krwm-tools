@@ -13,9 +13,11 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 - History (search terms and web history)
 
 
-## Setup (no remote)
+## No Remote Option
 
 ![Local Demo](assets/local_demo.gif)
+
+### Setup:
 
 **Option 1**: Download krwmtools-win from Releases (on the right). Extract and run the containing krwmtools.exe file. 
 
@@ -25,7 +27,7 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 
 Extracted data will be placed in your `Documents\KrwmTools\Client Logs` directory.
 
-## Setup (remote)
+## Remote Option
 
 ![Remote Demo](assets/remote_demo.gif)
 
@@ -44,4 +46,4 @@ Note: if no server_host is specified, the client will try to find the server on 
 
 
 ## Disclaimer
-This tool was made for educational purposes (for a university project). Please do not use it on others illegally or without their explicit consent, and note that I am not responsible for any damage.
+This tool was made for educational purposes (for a university security project). Please do not use it on others illegally or without their explicit consent, and note that I am not responsible for any damage.
