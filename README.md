@@ -12,9 +12,11 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 - Cookies
 - History (search terms and web history)
 
-[DEMO]
 
 ## Setup (no remote)
+
+![Local Demo](assets/local_demo.gif)
+
 **Option 1**: Download krwmtools-win from Releases (on the right). Extract and run the containing krwmtools.exe file. 
 
 **Option 2**: Directly with Python
@@ -24,6 +26,9 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 Extracted data will be placed in your `Documents\KrwmTools\Client Logs` directory.
 
 ## Setup (remote)
+
+![Remote Demo](assets/remote_demo.gif)
+
 **Server Setup**:
 1. Install dependencies with `pip install server/requirements.txt`
 1. Start the program with `python server/server.py`
