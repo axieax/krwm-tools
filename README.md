@@ -13,15 +13,28 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 - History (search terms and web history)
 
 
-## Setup
-**Option 1**: Download krwmtools-win from Releases (on the right). Extract and run the containing krwmtools.exe file.
+## Setup (no remote)
+**Option 1**: Download krwmtools-win from Releases (on the right). Extract and run the containing krwmtools.exe file. 
 
-**Option 2**: Directly with python
-1. Make sure you are in the root directory of the repo.
-1. Install dependencies with `pip install -r .\src\requirements.txt`.
-1. Start the program with `python .\src\main.py`.
+**Option 2**: Directly with Python
+1. Install dependencies with `pip install client/requirements.txt`
+1. Start the program with `python client/main.py`
 
-Extracted data will be placed in your `Documents\Krwm Tools\Logs` directory.
+Extracted data will be placed in your `Documents\KrwmTools\Client Logs` directory.
+
+## Setup (remote)
+**Server Setup**:
+1. Install dependencies with `pip install server/requirements.txt`
+1. Start the program with `python server/server.py`
+
+Extracted data will be placed in the server's `Documents\KrwmTools\Server Logs` directory.
+
+**Client Setup**:
+1. Install dependencies with `pip install client/requirements.txt`
+1. Start the program with the -r or --remote flag: `python client/main.py -r [OPTIONAL: server_address] [OPTIONAL: server_port]`
+
+Note: if no server_address is specified, the client will try to find the server on localhost. Extracted data will also be placed in the client's `Documents\KrwmTools\Client Logs` directory. 
+
 
 
 ## Disclaimer
