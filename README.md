@@ -12,6 +12,7 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 - Cookies
 - History (search terms and web history)
 
+[DEMO]
 
 ## Setup (no remote)
 **Option 1**: Download krwmtools-win from Releases (on the right). Extract and run the containing krwmtools.exe file. 
