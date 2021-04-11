@@ -17,11 +17,13 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 
 ![Local Demo](assets/local_demo.gif)
 
-### Setup:
+**Setup:**
 
-**Option 1**: Download krwmtools-win from Releases (on the right). Extract and run the containing krwmtools.exe file. 
+<u>Option 1: Windows executable</u>
+1. Download krwmtools-win.zip from Releases (on the right)
+1. Extract and run the containing krwmtools.exe file. 
 
-**Option 2**: Directly with Python
+<u>Option 2: Directly with Python</u>
 1. Install dependencies with `pip install client/requirements.txt`
 1. Start the program with `python client/main.py`
 
@@ -31,13 +33,23 @@ Extracted data will be placed in your `Documents\KrwmTools\Client Logs` director
 
 ![Remote Demo](assets/remote_demo.gif)
 
-**Server Setup**:
+**Server Setup:**
 1. Install dependencies with `pip install server/requirements.txt`
 1. Start the program with `python server/server.py`
 
 Extracted data will be placed in the server's `Documents\KrwmTools\Server Logs` directory.
 
-**Client Setup**:
+**Client Setup:**
+
+<u>Option 1: Windows executable</u>
+
+1. Download krwmtools-win.zip from Releases (on the right)
+1. Extract krwmtools.exe from the zip file
+1. Open Command Prompt and change to the directory containing the extracted executable file
+1. Start the executable with the -r or --remote flag: `krwmtools.exe -r [OPTIONAL: server_host] [OPTIONAL: server_port]`
+
+
+<u>Option 2: Directly with Python</u>
 1. Install dependencies with `pip install client/requirements.txt`
 1. Start the program with the -r or --remote flag: `python client/main.py -r [OPTIONAL: server_host] [OPTIONAL: server_port]`
 
