@@ -13,7 +13,7 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 - History (search terms and web history)
 
 
-## No Remote Option
+## Local Extraction
 
 ![Local Demo](assets/local_demo.gif)
 
@@ -27,7 +27,7 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 
 Extracted data will be placed in your `Documents\KrwmTools\Client Logs` directory.
 
-## Remote Option
+## Remote Extraction
 
 ![Remote Demo](assets/remote_demo.gif)
 
