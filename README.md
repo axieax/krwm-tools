@@ -31,9 +31,9 @@ Extracted data will be placed in the server's `Documents\KrwmTools\Server Logs` 
 
 **Client Setup**:
 1. Install dependencies with `pip install client/requirements.txt`
-1. Start the program with the -r or --remote flag: `python client/main.py -r [OPTIONAL: server_address] [OPTIONAL: server_port]`
+1. Start the program with the -r or --remote flag: `python client/main.py -r [OPTIONAL: server_host] [OPTIONAL: server_port]`
 
-Note: if no server_address is specified, the client will try to find the server on localhost. Extracted data will also be placed in the client's `Documents\KrwmTools\Client Logs` directory. 
+Note: if no server_host is specified, the client will try to find the server on localhost. Extracted data will also be placed in the client's `Documents\KrwmTools\Client Logs` directory. 
 
 
 
