@@ -20,8 +20,8 @@ def get_arguments():
     """ Returns the command line arguments for the program """
     parser = ArgumentParser(description='KrwmTools')
     parser.add_argument('-r', '--remote', nargs='*', required=False, default=None,
-                        help='Setup a remote connection (optional server_address, server_port)',
-                        metavar='server_address (OPTIONAL) server_port (OPTIONAL)')
+                        help='Setup a remote connection with a KrwmTools server',
+                        metavar='(OPTIONAL: server_host) (OPTIONAL: server_port)')
     args = parser.parse_args()
     return args
 
