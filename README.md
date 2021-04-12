@@ -12,6 +12,7 @@ A tool for extracting sensitive data from Chromium browsers on Windows. Able to 
 - Cookies
 - History (search terms and web history)
 
+Please check out [my writeup](writeup.md) as well :)
 
 ## Local Extraction
 
